@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import Container from '@/shared/components/container';
 import { Cat } from 'lucide-react';
+import { Navigation } from './navigation/navigation';
+import { SignOutButton } from '@/features/auth-sign-out';
+import Container from '@/shared/components/container';
 import { Card } from '@/shared/components/ui/card';
 import { ModeToggle } from '@/shared/components/mode-toggle';
-import { SignOutButton } from '@/features/auth-sign-out';
-import { Navigation } from './navigation/navigation';
 
 export function Header() {
   return (

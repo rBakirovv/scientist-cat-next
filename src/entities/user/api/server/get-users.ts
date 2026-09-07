@@ -1,6 +1,6 @@
 import 'server-only';
-import prisma from '@/shared/lib/prisma';
 import type { Role, User } from '../../model/types';
+import prisma from '@/shared/lib/prisma';
 
 const ROLES: readonly string[] = ['student', 'teacher', 'admin'];
 

@@ -3,11 +3,13 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import prettier from 'eslint-config-prettier/flat';
 import pluginQuery from '@tanstack/eslint-plugin-query';
+import fsd from 'eslint-plugin-fsd-lint';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   ...pluginQuery.configs['flat/recommended'],
+  fsd.configs.recommended,
   prettier,
   // Override default ignores of eslint-config-next.
   globalIgnores([

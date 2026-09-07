@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getApiSession } from '@/shared/lib/api-guard';
 import { getUsers } from '@/entities/user/server';
+import { getApiSession } from '@/shared/lib/api-guard';
 
 export async function GET() {
   const { session, response } = await getApiSession();

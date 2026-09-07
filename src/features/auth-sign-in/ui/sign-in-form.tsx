@@ -1,5 +1,11 @@
 'use client';
 
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { signInSchema, SignInValues } from '../model/schema';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -17,12 +23,6 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/shared/components/ui/field';
-import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signInSchema, SignInValues } from '../model/schema';
-import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { authClient } from '@/shared/lib/auth-client';
 
 export function SignInForm() {

@@ -1,21 +1,22 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { AlertCircleIcon, MessageCircle } from 'lucide-react';
+import { ConversationItem } from './conversation-item';
+import { ConversationItemSkeleton } from './conversation-item-skeleton';
+import { UserPicker } from '@/features/conversation-create';
+import { conversationsQuery } from '@/entities/conversation';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
 } from '@/shared/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
-import { AlertCircleIcon, MessageCircle } from 'lucide-react';
-import { ConversationItem } from './conversation-item';
-import { ConversationItemSkeleton } from './conversation-item-skeleton';
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from '@/shared/components/ui/alert';
-import { conversationsQuery } from '@/entities/conversation';
 
 export function ConversationList() {
   const {
@@ -27,12 +28,16 @@ export function ConversationList() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>
-          <div className="flex items-center gap-2">
-            Чаты
-            <MessageCircle size={16} />
-          </div>
-        </CardTitle>
+        <div className="flex w-full justify-between items-center">
+          <CardTitle>
+            <div className="flex items-center gap-2">
+              Чаты
+              <MessageCircle size={16} />
+            </div>
+          </CardTitle>
+
+          <UserPicker />
+        </div>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 overflow-y-auto">
         {isPending && (

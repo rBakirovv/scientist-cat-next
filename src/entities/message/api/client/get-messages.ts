@@ -1,9 +1,4 @@
-import { MessageItem } from '../../model/types';
-
-type MessagesPage = {
-  items: MessageItem[];
-  nextCursor: string | null;
-};
+import type { MessagesPage } from '../../model/types';
 
 export async function fetchMessages(
   conversationId: string,

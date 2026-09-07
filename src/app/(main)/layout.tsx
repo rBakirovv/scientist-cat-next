@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth } from '@/shared/lib/auth';
 import { Header } from '@/widgets/header';
+import { auth } from '@/shared/lib/auth';
 import Container from '@/shared/components/container';
 
 export default async function MainLayout({

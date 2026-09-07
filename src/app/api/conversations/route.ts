@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getApiSession } from '@/shared/lib/api-guard';
+import z from 'zod';
 import {
   getConversations,
   findOrCreateConversation,
 } from '@/entities/conversation/server';
-import z from 'zod';
+import { getApiSession } from '@/shared/lib/api-guard';
 import { logger } from '@/shared/lib/logger';
 
 export async function GET() {

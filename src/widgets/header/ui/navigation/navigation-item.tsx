@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import type { NavItem } from '../../model/navigation-items';
 import { DrawerClose } from '@/shared/components/ui/drawer';
 import { cn } from '@/shared/lib/utils';
-import type { NavItem } from '../../model/navigation-items';
 
 export function NavigationItem({ item }: { item: NavItem }) {
   const pathname = usePathname();
@@ -28,7 +28,7 @@ export function NavigationItem({ item }: { item: NavItem }) {
         >
           <span
             aria-hidden
-            className="bg-primary absolute top-1/2 left-1 h-5 w-1 -translate-x-2 -translate-y-1/2 rounded-full opacity-0 transition-all duration-200 group-data-active/nav-item:translate-x-0 group-data-active/nav-item:opacity-100"
+            className="bg-primary absolute top-1/2 -left-3 h-5 w-1 -translate-y-1/2 rounded-full opacity-0 transition-all duration-200 group-data-active/nav-item:translate-x-0 group-data-active/nav-item:opacity-100"
           />
           <item.icon className="group-data-active/nav-item:text-primary size-4 shrink-0 transition-colors" />
           <span className="truncate">{item.label}</span>

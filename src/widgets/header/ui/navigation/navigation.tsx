@@ -1,5 +1,8 @@
 'use client';
 
+import { Menu } from 'lucide-react';
+import { navItems } from '../../model/navigation-items';
+import { NavigationItem } from './navigation-item';
 import { Button } from '@/shared/components/ui/button';
 import {
   Drawer,
@@ -8,9 +11,6 @@ import {
   DrawerFooter,
   DrawerTrigger,
 } from '@/shared/components/ui/drawer';
-import { Menu } from 'lucide-react';
-import { navItems } from '../../model/navigation-items';
-import { NavigationItem } from './navigation-item';
 
 export function Navigation() {
   return (
@@ -24,7 +24,7 @@ export function Navigation() {
         }
       />
       <DrawerContent>
-        <nav className="flex flex-1 flex-col gap-1 p-4">
+        <nav className="flex flex-1 flex-col gap-1 px-6 py-4">
           {navItems.map((nav) => (
             <NavigationItem key={nav.href} item={nav} />
           ))}

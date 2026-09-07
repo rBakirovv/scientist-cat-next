@@ -1,4 +1,4 @@
-import { MessageCircle, type LucideIcon } from 'lucide-react';
+import { MessageCircle, Home, type LucideIcon } from 'lucide-react';
 
 export type NavItem = {
   href: string;
@@ -7,5 +7,6 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
+  { href: '/', label: 'Главная', icon: Home },
   { href: '/messages', label: 'Сообщения', icon: MessageCircle },
 ];
