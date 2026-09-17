@@ -1,4 +1,4 @@
-export type { ConversationListItem } from './model/types';
+export type { ConversationListItem, ConversationPeer } from './model/types';
 export {
   fetchConversations,
   conversationsQuery,

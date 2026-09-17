@@ -1,17 +1,11 @@
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { Header } from '@/widgets/header';
-import { auth } from '@/shared/lib/auth';
 import Container from '@/shared/components/container';
 
-export default async function MainLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect('/sign-in');
-
   return (
     <>
       <Header />

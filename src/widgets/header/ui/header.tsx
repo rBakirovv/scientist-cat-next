@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { Cat } from 'lucide-react';
 import { Navigation } from './navigation/navigation';
 import { SignOutButton } from '@/features/auth-sign-out';
 import Container from '@/shared/components/container';
@@ -17,8 +17,14 @@ export function Header() {
               href="/"
               className="text-foreground flex items-center gap-2 text-lg font-medium"
             >
-              <Cat className="size-6" strokeWidth={2} />
-              Кот
+              <Image
+                src="/logo.png"
+                alt="Кот учёный"
+                width={1080}
+                height={1080}
+                priority
+                className="size-9 rounded-full object-cover"
+              />
             </Link>
           </div>
 

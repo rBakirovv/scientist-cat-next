@@ -1,13 +1,13 @@
-name: kot
+name: scientist-cat-next
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: ${POSTGRES_CONTAINER_NAME:-kot_db}
+    container_name: ${POSTGRES_CONTAINER_NAME:-scientist_cat_next_db}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-kot}
+      POSTGRES_DB: ${POSTGRES_DB:-scientist_cat_next}
     ports:
       - '${POSTGRES_PORT:-5433}:5432'
     volumes:

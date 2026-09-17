@@ -28,7 +28,7 @@ export function ConversationList() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <div className="flex w-full justify-between items-center">
+        <div className="flex w-full items-center justify-between">
           <CardTitle>
             <div className="flex items-center gap-2">
               Чаты

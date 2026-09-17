@@ -1,30 +1,9 @@
-import { headers } from 'next/headers';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { ConversationList } from '@/widgets/conversation-list';
-import { ConversationView } from '@/widgets/conversation-view';
-import { conversationsQuery } from '@/entities/conversation';
-import { getConversations } from '@/entities/conversation/server';
-import { auth } from '@/shared/lib/auth';
-import { getQueryClient } from '@/shared/lib/query-client';
+import { ConversationViewEmpty } from '@/widgets/conversation-view';
 
-export default async function MessagesPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return null;
-
-  const queryClient = getQueryClient();
-
-  await queryClient
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    .query({
-      queryKey: conversationsQuery.queryKey,
-      queryFn: () => getConversations(session.user.id),
-    })
-    .catch(() => {});
-
+export default function MessagesPage() {
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ConversationList />
-      <ConversationView />
-    </HydrationBoundary>
+    <div className="min-h-0 lg:col-span-2">
+      <ConversationViewEmpty />
+    </div>
   );
 }
