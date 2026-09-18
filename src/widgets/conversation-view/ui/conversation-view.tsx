@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { AlertCircleIcon, Loader2 } from 'lucide-react';
 import { useMessageFeedScroll } from '../lib/use-message-feed-scroll';
 import { MessageComposer } from '@/features/message-send';
-import type { ConversationPeer } from '@/entities/conversation';
-import { MessageRow, messagesQuery, useMarkRead } from '@/entities/message';
+import { conversationsQuery } from '@/entities/conversation';
+import {
+  MessageRow,
+  MessageRowSkeleton,
+  messagesQuery,
+  useMarkRead,
+} from '@/entities/message';
 import { UserAvatar } from '@/entities/user';
 import {
   Alert,
@@ -20,18 +25,34 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
+import { useCurrentUserId } from '@/shared/lib/current-user';
+import { Skeleton } from '@/shared/components/ui/skeleton';
+
+const PENDING_ROWS = [
+  { isOwn: false, width: 'w-56' },
+  { isOwn: true, width: 'w-40' },
+  { isOwn: true, width: 'w-64' },
+  { isOwn: false, width: 'w-48' },
+];
 
 export function ConversationView({
   conversationId,
-  currentUserId,
-  peer,
 }: {
   conversationId: string;
-  currentUserId: string;
-  peer: ConversationPeer;
 }) {
-  const { data, error, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useInfiniteQuery(messagesQuery(conversationId));
+  const currentUserId = useCurrentUserId();
+
+  const { data: conversations } = useQuery(conversationsQuery);
+  const peer = conversations?.find(({ id }) => id === conversationId)?.peer;
+
+  const {
+    data,
+    error,
+    isPending,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(messagesQuery(conversationId));
 
   const messages = data
     ? [...data.pages].reverse().flatMap((page) => page.items)
@@ -64,8 +85,17 @@ export function ConversationView({
     <Card className="flex h-full w-full flex-col">
       <CardHeader>
         <div className="flex items-center gap-2">
-          {peer && <UserAvatar user={peer} />}
-          <CardTitle>{peer?.name}</CardTitle>
+          {peer ? (
+            <>
+              <UserAvatar user={peer} />
+              <CardTitle>{peer.name}</CardTitle>
+            </>
+          ) : (
+            <>
+              <Skeleton className="size-8 shrink-0 rounded-full" />
+              <Skeleton className="h-5 w-40 rounded-sm" />
+            </>
+          )}
         </div>
       </CardHeader>
 
@@ -86,6 +116,11 @@ export function ConversationView({
         {isFetchingNextPage && (
           <Loader2 className="text-muted-foreground mx-auto size-4 shrink-0 animate-spin" />
         )}
+
+        {isPending &&
+          PENDING_ROWS.map((row, index) => (
+            <MessageRowSkeleton key={index} {...row} />
+          ))}
 
         {messages.map((message) => {
           const isOwn = message.senderId === currentUserId;

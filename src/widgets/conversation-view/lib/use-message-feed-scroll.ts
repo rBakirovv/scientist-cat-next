@@ -147,6 +147,13 @@ export function useMessageFeedScroll({
     if (!container) return;
     if (renderedFirstMessage.current === firstMessageId) return;
 
+    // Лента приехала уже после захода в чат: это первая порция, а не подстановка
+    // старого. Цель из pendingScroll оставляем — её доставит ResizeObserver.
+    if (renderedFirstMessage.current === undefined) {
+      renderedFirstMessage.current = firstMessageId;
+      return;
+    }
+
     renderedFirstMessage.current = firstMessageId;
     pendingScroll.current = null;
     container.scrollTop = container.scrollHeight - distanceFromBottom.current;
@@ -157,6 +164,12 @@ export function useMessageFeedScroll({
     const container = containerRef.current;
     if (!container) return;
     if (renderedLastMessage.current === lastMessageId) return;
+
+    // Та же первая порция — низ ленты не «новое сообщение».
+    if (renderedLastMessage.current === undefined) {
+      renderedLastMessage.current = lastMessageId;
+      return;
+    }
 
     renderedLastMessage.current = lastMessageId;
 

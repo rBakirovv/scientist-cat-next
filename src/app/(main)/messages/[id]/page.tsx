@@ -1,17 +1,24 @@
-import { Suspense } from 'react';
-import { ConversationSection } from './conversation-section';
-import { ConversationViewSkeleton } from '@/widgets/conversation-view';
+'use client';
 
-export default function MessagePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+import { Suspense } from 'react';
+import { useParams } from 'next/navigation';
+import {
+  ConversationView,
+  ConversationViewSkeleton,
+} from '@/widgets/conversation-view';
+
+export default function MessagePage() {
   return (
     <div className="min-h-0 lg:col-span-2">
       <Suspense fallback={<ConversationViewSkeleton />}>
-        <ConversationSection params={params} />
+        <ConversationScreen />
       </Suspense>
     </div>
   );
+}
+
+function ConversationScreen() {
+  const { id } = useParams<{ id: string }>();
+
+  return <ConversationView conversationId={id} />;
 }

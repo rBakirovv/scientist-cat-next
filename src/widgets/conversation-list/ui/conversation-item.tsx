@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { ConversationListItem } from '@/entities/conversation';
+import { messagesQuery } from '@/entities/message';
 import { UserAvatar } from '@/entities/user';
 import { formatListDate } from '@/shared/lib/format-date';
 import { cn } from '@/shared/lib/utils';
@@ -13,14 +15,22 @@ export function ConversationItem({
   conversation: ConversationListItem;
 }) {
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const href = `/messages/${conversation.id}`;
   const isActive = pathname === href;
   const hasUnread = conversation.unreadCount > 0;
+
+  const prefetchMessages = () => {
+    queryClient.infiniteQuery(messagesQuery(conversation.id)).catch(() => {});
+  };
 
   return (
     <li>
       <Link
         href={href}
+        onMouseEnter={prefetchMessages}
+        onFocus={prefetchMessages}
+        onTouchStart={prefetchMessages}
         aria-current={isActive ? 'page' : undefined}
         data-active={isActive || undefined}
         className={cn(
