@@ -1,5 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { conversationsQuery } from './get-conversations';
+import { useMutation } from '@tanstack/react-query';
 
 export async function createConversation(
   peerId: string,
@@ -15,12 +14,5 @@ export async function createConversation(
 }
 
 export function useCreateConversation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: createConversation,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: conversationsQuery.queryKey });
-    },
-  });
+  return useMutation({ mutationFn: createConversation });
 }

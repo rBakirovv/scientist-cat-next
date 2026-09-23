@@ -5,7 +5,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { AlertCircleIcon, Loader2 } from 'lucide-react';
 import { useMessageFeedScroll } from '../lib/use-message-feed-scroll';
 import { MessageComposer } from '@/features/message-send';
-import { conversationsQuery } from '@/entities/conversation';
+import { conversationQuery, conversationsQuery } from '@/entities/conversation';
 import {
   MessageRow,
   MessageRowSkeleton,
@@ -43,7 +43,18 @@ export function ConversationView({
   const currentUserId = useCurrentUserId();
 
   const { data: conversations } = useQuery(conversationsQuery);
-  const peer = conversations?.find(({ id }) => id === conversationId)?.peer;
+  const listedPeer = conversations?.find(
+    ({ id }) => id === conversationId,
+  )?.peer;
+
+  // В списке лежат только чаты с сообщениями, поэтому свежесозданного там нет.
+  // Дотягиваем собеседника точечно — иначе шапка застрянет на скелетоне.
+  const { data: conversation } = useQuery({
+    ...conversationQuery(conversationId),
+    enabled: conversations !== undefined && listedPeer === undefined,
+  });
+
+  const peer = listedPeer ?? conversation?.peer;
 
   const {
     data,

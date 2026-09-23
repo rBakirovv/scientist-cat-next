@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "upgrade": "next upgrade",
+    "upgrade:canary": "next upgrade --revision canary",
     "lint": "eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

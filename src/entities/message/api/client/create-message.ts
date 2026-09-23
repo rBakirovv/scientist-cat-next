@@ -38,6 +38,7 @@ export function useSendMessage(conversationId: string) {
       );
 
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 }

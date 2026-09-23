@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AlertCircleIcon, Plus } from 'lucide-react';
+import { AlertCircleIcon, Loader2, Plus } from 'lucide-react';
 import { UserPickerSkeleton } from './user-picker-skeleton';
-import { usersQuery, type User } from '@/entities/user';
+import { useCreateConversation } from '@/entities/conversation';
+import { usersWithoutChatQuery, type User } from '@/entities/user';
 import { Button } from '@/shared/components/ui/button';
 import {
   Alert,
@@ -24,12 +26,25 @@ import {
 export function UserPicker() {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const {
     data: users,
     isPending,
     error,
-  } = useQuery({ ...usersQuery, enabled: open });
+  } = useQuery({ ...usersWithoutChatQuery, enabled: open });
+
+  const {
+    mutateAsync: createConversation,
+    isPending: isCreating,
+    error: createError,
+  } = useCreateConversation();
+
+  const openChatWith = async (user: User) => {
+    const { id } = await createConversation(user.id);
+    setOpen(false);
+    router.push(`/messages/${id}`);
+  };
 
   return (
     <Combobox
@@ -37,10 +52,15 @@ export function UserPicker() {
       onOpenChange={(next) => setOpen(next)}
       items={users ?? []}
       itemToStringLabel={(user: User) => user.name}
+      onValueChange={(user: User | null) => {
+        if (user) void openChatWith(user);
+      }}
     >
       <ComboboxTrigger
         className="[&>svg:last-of-type]:hidden"
-        onMouseEnter={() => void queryClient.query(usersQuery).catch(() => {})}
+        onMouseEnter={() =>
+          void queryClient.query(usersWithoutChatQuery).catch(() => {})
+        }
         render={<Button variant="outline" size="icon-sm" title="Новый чат" />}
       >
         <Plus />
@@ -58,15 +78,28 @@ export function UserPicker() {
           </div>
         )}
 
-        {error && (
+        {(error || createError) && (
           <Alert variant="destructive" className="border-0">
             <AlertCircleIcon />
-            <AlertTitle>Не удалось загрузить пользователей</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
+            <AlertTitle>
+              {error
+                ? 'Не удалось загрузить пользователей'
+                : 'Не удалось создать чат'}
+            </AlertTitle>
+            <AlertDescription>
+              {(error ?? createError)?.message}
+            </AlertDescription>
           </Alert>
         )}
 
-        {!isPending && !error && (
+        {isCreating && (
+          <div className="text-muted-foreground flex items-center gap-2 p-3 text-sm">
+            <Loader2 className="size-4 animate-spin" />
+            Открываем чат
+          </div>
+        )}
+
+        {!isPending && !error && !isCreating && (
           <>
             <ComboboxEmpty>Пользователи не найдены</ComboboxEmpty>
             <ComboboxList>

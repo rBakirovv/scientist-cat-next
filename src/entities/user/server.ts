@@ -1,1 +1,1 @@
-export { getUsers } from './api/server/get-users';
+export { getUsersWithoutChat } from './api/server/get-users';

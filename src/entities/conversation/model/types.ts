@@ -5,6 +5,8 @@ export type ConversationListItem = Awaited<
   ReturnType<typeof getConversations>
 >[number];
 
-export type ConversationPeer = NonNullable<
+export type ConversationDetails = NonNullable<
   Awaited<ReturnType<typeof getConversation>>
->['peer'];
+>;
+
+export type ConversationPeer = ConversationDetails['peer'];
