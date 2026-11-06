@@ -1,12 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { AlertCircleIcon, MessageCircle } from 'lucide-react';
+import { useConversationList } from '../api/client/use-conversation-list';
 import { ConversationItem } from './conversation-item';
 import { ConversationItemSkeleton } from './conversation-item-skeleton';
 import { UserPicker } from '@/features/conversation-create';
-import { conversationsQuery } from '@/entities/conversation';
-import { usePollingInterval } from '@/shared/lib/realtime';
 import {
   Card,
   CardHeader,
@@ -20,14 +18,7 @@ import {
 } from '@/shared/components/ui/alert';
 
 export function ConversationList() {
-  // Пока сокет жив, опроса нет. Оборвался — поллинг подхватывает.
-  const refetchInterval = usePollingInterval(10 * 1000);
-
-  const {
-    data: conversations,
-    isPending,
-    error,
-  } = useQuery({ ...conversationsQuery, refetchInterval });
+  const { conversations, isPending, error } = useConversationList();
 
   return (
     <Card className="h-full">

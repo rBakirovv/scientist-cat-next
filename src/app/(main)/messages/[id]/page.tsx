@@ -1,11 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useParams } from 'next/navigation';
-import {
-  ConversationView,
-  ConversationViewSkeleton,
-} from '@/widgets/conversation-view';
+import { ConversationScreen } from './conversation-screen';
+import { ConversationViewSkeleton } from '@/widgets/conversation-view';
 
 export default function MessagePage() {
   return (
@@ -15,10 +12,4 @@ export default function MessagePage() {
       </Suspense>
     </div>
   );
-}
-
-function ConversationScreen() {
-  const { id } = useParams<{ id: string }>();
-
-  return <ConversationView conversationId={id} />;
 }

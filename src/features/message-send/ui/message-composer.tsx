@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
-import { createMessageSchema, useSendMessage } from '@/entities/message';
+import { useMessageComposer } from '../model/use-message-composer';
 import { FieldError } from '@/shared/components/ui/field';
 import {
   InputGroup,
@@ -16,47 +15,20 @@ export function MessageComposer({
 }: {
   conversationId: string;
 }) {
-  const [body, setBody] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const { mutateAsync, isPending } = useSendMessage(conversationId);
-
-  const isValid = createMessageSchema.safeParse({ body }).success;
-  const canSend = isValid && !isPending;
-
-  const send = async () => {
-    if (!canSend) return;
-
-    try {
-      await mutateAsync(body);
-      setBody('');
-      setError(null);
-    } catch {
-      setError('Не удалось отправить сообщение');
-    }
-  };
+  const { body, error, canSend, onSubmit, onChange, onKeyDown } =
+    useMessageComposer(conversationId);
 
   return (
-    <form
-      className="w-full"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void send();
-      }}
-    >
+    <form className="w-full" onSubmit={onSubmit}>
       <InputGroup>
         <InputGroupTextarea
           value={body}
-          onChange={(event) => setBody(event.target.value)}
+          onChange={onChange}
           rows={1}
           className="max-h-36 min-h-9"
           placeholder="Сообщение"
           aria-label="Текст сообщения"
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-              event.preventDefault();
-              void send();
-            }
-          }}
+          onKeyDown={onKeyDown}
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton

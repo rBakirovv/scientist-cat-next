@@ -1,9 +1,8 @@
 import { Suspense } from 'react';
-import { headers } from 'next/headers';
+import { getCurrentUserId } from './api/server/get-current-user-id';
 import { ConversationListSection } from './conversation-list-section';
 import { RealtimeSync } from './realtime-sync';
 import { ConversationListSkeleton } from '@/widgets/conversation-list';
-import { auth } from '@/shared/lib/auth';
 import { CurrentUserProvider } from '@/shared/lib/current-user';
 import { RealtimeProvider } from '@/shared/lib/realtime';
 
@@ -12,10 +11,7 @@ export default function MessagesLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const userId = headers()
-    .then((requestHeaders) => auth.api.getSession({ headers: requestHeaders }))
-    .then((session) => session?.user.id ?? null)
-    .catch(() => null);
+  const userId = getCurrentUserId();
 
   return (
     // Провайдер снаружи сетки: список чатов тоже спрашивает у него,

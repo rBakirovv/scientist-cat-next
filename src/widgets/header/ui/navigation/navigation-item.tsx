@@ -1,15 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useNavigationItem } from '../../model/use-navigation-item';
 import type { NavItem } from '../../model/navigation-items';
 import { DrawerClose } from '@/shared/components/ui/drawer';
 import { cn } from '@/shared/lib/utils';
 
 export function NavigationItem({ item }: { item: NavItem }) {
-  const pathname = usePathname();
-  const isActive =
-    item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+  const { isActive } = useNavigationItem(item);
 
   return (
     <DrawerClose

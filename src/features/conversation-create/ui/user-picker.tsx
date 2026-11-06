@@ -1,12 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircleIcon, Loader2, Plus } from 'lucide-react';
 import { UserPickerSkeleton } from './user-picker-skeleton';
-import { useCreateConversation } from '@/entities/conversation';
-import { usersWithoutChatQuery, type User } from '@/entities/user';
+import { useUserPicker } from '../model/use-user-picker';
+import type { User } from '@/entities/user';
 import { Button } from '@/shared/components/ui/button';
 import {
   Alert,
@@ -24,43 +21,29 @@ import {
 } from '@/shared/components/ui/combobox';
 
 export function UserPicker() {
-  const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
   const {
-    data: users,
+    open,
+    onOpenChange,
+    users,
     isPending,
+    isCreating,
     error,
-  } = useQuery({ ...usersWithoutChatQuery, enabled: open });
-
-  const {
-    mutateAsync: createConversation,
-    isPending: isCreating,
-    error: createError,
-  } = useCreateConversation();
-
-  const openChatWith = async (user: User) => {
-    const { id } = await createConversation(user.id);
-    setOpen(false);
-    router.push(`/messages/${id}`);
-  };
+    createError,
+    prefetchUsers,
+    onValueChange,
+  } = useUserPicker();
 
   return (
     <Combobox
       open={open}
-      onOpenChange={(next) => setOpen(next)}
-      items={users ?? []}
+      onOpenChange={onOpenChange}
+      items={users}
       itemToStringLabel={(user: User) => user.name}
-      onValueChange={(user: User | null) => {
-        if (user) void openChatWith(user);
-      }}
+      onValueChange={onValueChange}
     >
       <ComboboxTrigger
         className="[&>svg:last-of-type]:hidden"
-        onMouseEnter={() =>
-          void queryClient.query(usersWithoutChatQuery).catch(() => {})
-        }
+        onMouseEnter={prefetchUsers}
         render={<Button variant="outline" size="icon-sm" title="Новый чат" />}
       >
         <Plus />

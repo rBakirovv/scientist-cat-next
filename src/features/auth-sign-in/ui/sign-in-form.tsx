@@ -1,10 +1,8 @@
 'use client';
 
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { signInSchema, type SignInValues } from '../model/schema';
+import { useSignInForm } from '../model/use-sign-in-form';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -22,36 +20,9 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/shared/components/ui/field';
-import { authClient } from '@/shared/lib/auth-client';
 
 export function SignInForm() {
-  const router = useRouter();
-
-  const form = useForm<SignInValues>({
-    resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      rememberMe: false,
-    },
-  });
-
-  const handleSubmit = async (values: SignInValues) => {
-    const { error } = await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-      rememberMe: values.rememberMe,
-    });
-
-    if (error) {
-      form.setError('password', { message: 'Неверный email или пароль' });
-
-      return;
-    }
-
-    router.push('/');
-    router.refresh();
-  };
+  const { form, onSubmit } = useSignInForm();
 
   return (
     <Card className="w-full max-w-sm">
@@ -63,7 +34,7 @@ export function SignInForm() {
       </CardHeader>
       <form
         noValidate
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={onSubmit}
         className="flex flex-col gap-(--card-spacing)"
       >
         <CardContent>
@@ -119,7 +90,7 @@ export function SignInForm() {
                   <Checkbox
                     id="remember-me"
                     checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
+                    onCheckedChange={field.onChange}
                     onBlur={field.onBlur}
                     inputRef={field.ref}
                     aria-invalid={fieldState.invalid}

@@ -1,17 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { AlertCircleIcon, Loader2 } from 'lucide-react';
-import { useMessageFeedScroll } from '../lib/use-message-feed-scroll';
+import { useConversationView } from '../model/use-conversation-view';
 import { MessageComposer } from '@/features/message-send';
-import { conversationQuery, conversationsQuery } from '@/entities/conversation';
-import {
-  MessageRow,
-  MessageRowSkeleton,
-  messagesQuery,
-  useMarkRead,
-} from '@/entities/message';
+import { MessageRow, MessageRowSkeleton } from '@/entities/message';
 import { UserAvatar } from '@/entities/user';
 import {
   Alert,
@@ -25,8 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { useCurrentUserId } from '@/shared/lib/current-user';
-import { usePollingInterval } from '@/shared/lib/realtime';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 
 const PENDING_ROWS = [
@@ -41,70 +31,15 @@ export function ConversationView({
 }: {
   conversationId: string;
 }) {
-  const currentUserId = useCurrentUserId();
-
-  // Пока сокет жив, опроса нет. Оборвался — поллинг подхватывает.
-  const refetchInterval = usePollingInterval(5 * 1000);
-
-  const { data: conversations } = useQuery(conversationsQuery);
-  const listedPeer = conversations?.find(
-    ({ id }) => id === conversationId,
-  )?.peer;
-
-  // В списке лежат только чаты с сообщениями, поэтому свежесозданного там нет.
-  // Дотягиваем собеседника точечно — иначе шапка застрянет на скелетоне.
-  const { data: conversation } = useQuery({
-    ...conversationQuery(conversationId),
-    enabled: conversations !== undefined && listedPeer === undefined,
-  });
-
-  const peer = listedPeer ?? conversation?.peer;
-
   const {
-    data,
+    peer,
+    rows,
     error,
     isPending,
-    hasNextPage,
     isFetchingNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    ...messagesQuery(conversationId),
-    refetchInterval,
-  });
-
-  const messages = data
-    ? [...data.pages].reverse().flatMap((page) => page.items)
-    : [];
-
-  const firstUnreadId = messages.find(
-    (message) => message.senderId !== currentUserId && message.readAt === null,
-  )?.id;
-
-  const lastMessage = messages[messages.length - 1];
-
-  const { containerRef, sentinelRef } = useMessageFeedScroll({
-    conversationId,
-    firstMessageId: messages[0]?.id,
-    lastMessageId: lastMessage?.id,
-    isLastMessageOwn: lastMessage?.senderId === currentUserId,
-    firstUnreadId,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  });
-
-  const { mutate: markRead } = useMarkRead(conversationId);
-
-  // Пока сообщения приходили только при заходе, хватало одного вызова.
-  // Теперь чужое может прилететь в уже открытый чат — помечаем и его.
-  const lastIncomingId =
-    lastMessage && lastMessage.senderId !== currentUserId
-      ? lastMessage.id
-      : undefined;
-
-  useEffect(() => {
-    markRead();
-  }, [conversationId, lastIncomingId, markRead]);
+    containerRef,
+    sentinelRef,
+  } = useConversationView(conversationId);
 
   return (
     <Card className="flex h-full w-full flex-col">
@@ -147,18 +82,14 @@ export function ConversationView({
             <MessageRowSkeleton key={index} {...row} />
           ))}
 
-        {messages.map((message) => {
-          const isOwn = message.senderId === currentUserId;
-
-          return (
-            <MessageRow
-              key={message.id}
-              message={message}
-              isOwn={isOwn}
-              avatar={!isOwn && peer ? <UserAvatar user={peer} /> : undefined}
-            />
-          );
-        })}
+        {rows.map(({ message, isOwn }) => (
+          <MessageRow
+            key={message.id}
+            message={message}
+            isOwn={isOwn}
+            avatar={!isOwn && peer ? <UserAvatar user={peer} /> : undefined}
+          />
+        ))}
       </CardContent>
 
       <CardFooter>

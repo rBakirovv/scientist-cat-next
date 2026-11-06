@@ -1,12 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+import { useConversationItem } from '../model/use-conversation-item';
 import { ConversationListItem } from '@/entities/conversation';
-import { messagesQuery } from '@/entities/message';
 import { UserAvatar } from '@/entities/user';
-import { formatListDate } from '@/shared/lib/format-date';
 import { cn } from '@/shared/lib/utils';
 
 export function ConversationItem({
@@ -14,15 +11,8 @@ export function ConversationItem({
 }: {
   conversation: ConversationListItem;
 }) {
-  const pathname = usePathname();
-  const queryClient = useQueryClient();
-  const href = `/messages/${conversation.id}`;
-  const isActive = pathname === href;
-  const hasUnread = conversation.unreadCount > 0;
-
-  const prefetchMessages = () => {
-    queryClient.infiniteQuery(messagesQuery(conversation.id)).catch(() => {});
-  };
+  const { href, isActive, hasUnread, prefetchMessages, lastMessageDate } =
+    useConversationItem(conversation);
 
   return (
     <li>
@@ -54,8 +44,7 @@ export function ConversationItem({
           dateTime={String(conversation.lastMessage?.createdAt ?? '')}
           className="text-muted-foreground col-start-3 shrink-0 text-xs"
         >
-          {conversation.lastMessage &&
-            formatListDate(conversation.lastMessage.createdAt)}
+          {lastMessageDate}
         </time>
 
         <span className="text-muted-foreground col-start-2 row-start-2 min-w-0 truncate text-xs">
