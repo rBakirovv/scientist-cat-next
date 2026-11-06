@@ -16,7 +16,7 @@
 | Реальное время    | `ws` + Postgres `LISTEN/NOTIFY`                         |
 | Логи              | pino                                                    |
 
-Включены экспериментальные возможности Next: `cacheComponents`, `partialPrefetching`, `reactCompiler`.
+Включены возможности Next.js: `cacheComponents`, `partialPrefetching`, `reactCompiler`.
 
 > API этой версии Next отличается от более ранних. Перед правками читайте
 > `node_modules/next/dist/docs/` — подробности в [AGENTS.md](AGENTS.md).
