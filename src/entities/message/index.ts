@@ -2,6 +2,8 @@ export type { MessageItem, MessagesPage } from './model/types';
 export { createMessageSchema } from './model/schema';
 export type { CreateMessageValues } from './model/schema';
 export { fetchMessages, messagesQuery } from './api/client/get-messages';
+export { appendMessage } from './api/client/append-message';
+export { markMessagesRead } from './api/client/mark-messages-read';
 export { sendMessage, useSendMessage } from './api/client/create-message';
 export { markRead, useMarkRead } from './api/client/mark-read';
 export { MessageRow } from './ui/message-row';

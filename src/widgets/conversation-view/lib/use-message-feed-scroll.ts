@@ -173,6 +173,11 @@ export function useMessageFeedScroll({
 
     renderedLastMessage.current = lastMessageId;
 
+    // Раз лента доросла до нового сообщения, заход в чат уже отработал: цель
+    // входа снимаем в любом случае. Иначе ResizeObserver переприменит её после
+    // того, как mark-read обнулит firstUnreadId, и утащит человека вниз.
+    pendingScroll.current = null;
+
     // Своё сообщение доводим до низа всегда. Чужое — только если человек
     // и так читал последние: иначе выдернем его из середины истории.
     const nearBottom =
@@ -180,7 +185,6 @@ export function useMessageFeedScroll({
       NEAR_BOTTOM;
 
     if (isLastMessageOwn || nearBottom) {
-      pendingScroll.current = null;
       container.scrollTop = container.scrollHeight;
       distanceFromBottom.current = container.scrollHeight - container.scrollTop;
     }

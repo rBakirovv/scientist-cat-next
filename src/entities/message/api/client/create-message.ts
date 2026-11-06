@@ -1,10 +1,6 @@
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import type { MessageItem, MessagesPage } from '../../model/types';
-import { messagesQuery } from './get-messages';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { MessageItem } from '../../model/types';
+import { appendMessage } from './append-message';
 
 export async function sendMessage(
   conversationId: string,
@@ -26,17 +22,10 @@ export function useSendMessage(conversationId: string) {
   return useMutation({
     mutationFn: (body: string) => sendMessage(conversationId, body),
     onSuccess: (message) => {
-      queryClient.setQueryData(
-        messagesQuery(conversationId).queryKey,
-        (old: InfiniteData<MessagesPage> | undefined) => {
-          if (!old) return old;
-          const pages = [...old.pages];
-          pages[0] = { ...pages[0], items: [...pages[0].items, message] };
+      appendMessage(queryClient, conversationId, message);
 
-          return { ...old, pages };
-        },
-      );
-
+      // Первое сообщение переводит собеседника из пикера в список чатов,
+      // поэтому оба списка устаревают одновременно.
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },

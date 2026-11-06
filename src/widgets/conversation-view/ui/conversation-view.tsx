@@ -26,6 +26,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useCurrentUserId } from '@/shared/lib/current-user';
+import { usePollingInterval } from '@/shared/lib/realtime';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 
 const PENDING_ROWS = [
@@ -41,6 +42,9 @@ export function ConversationView({
   conversationId: string;
 }) {
   const currentUserId = useCurrentUserId();
+
+  // Пока сокет жив, опроса нет. Оборвался — поллинг подхватывает.
+  const refetchInterval = usePollingInterval(5 * 1000);
 
   const { data: conversations } = useQuery(conversationsQuery);
   const listedPeer = conversations?.find(
@@ -63,7 +67,10 @@ export function ConversationView({
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useInfiniteQuery(messagesQuery(conversationId));
+  } = useInfiniteQuery({
+    ...messagesQuery(conversationId),
+    refetchInterval,
+  });
 
   const messages = data
     ? [...data.pages].reverse().flatMap((page) => page.items)
@@ -88,9 +95,16 @@ export function ConversationView({
 
   const { mutate: markRead } = useMarkRead(conversationId);
 
+  // Пока сообщения приходили только при заходе, хватало одного вызова.
+  // Теперь чужое может прилететь в уже открытый чат — помечаем и его.
+  const lastIncomingId =
+    lastMessage && lastMessage.senderId !== currentUserId
+      ? lastMessage.id
+      : undefined;
+
   useEffect(() => {
     markRead();
-  }, [conversationId, markRead]);
+  }, [conversationId, lastIncomingId, markRead]);
 
   return (
     <Card className="flex h-full w-full flex-col">

@@ -9,7 +9,9 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   ...pluginQuery.configs['flat/recommended'],
-  fsd.configs.recommended,
+  // Слои FSD описывают src. realtime/ — отдельный Node-процесс, а не слой,
+  // и правила вроде «только абсолютные импорты» к нему неприменимы.
+  { ...fsd.configs.recommended, files: ['src/**/*.{ts,tsx}'] },
   prettier,
   // Override default ignores of eslint-config-next.
   globalIgnores([

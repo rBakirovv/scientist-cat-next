@@ -13,5 +13,27 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  realtime:
+    build:
+      context: .
+      dockerfile: realtime/Dockerfile
+    container_name: ${REALTIME_CONTAINER_NAME:-scientist_cat_realtime}
+    environment:
+      # Внутри сети compose база доступна по имени сервиса, а не по localhost.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-scientist_cat_next}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      REALTIME_PORT: 3001
+      REALTIME_ALLOWED_ORIGINS: ${REALTIME_ALLOWED_ORIGINS:-http://localhost:3000}
+    ports:
+      - '${REALTIME_PORT:-3001}:3001'
+    volumes:
+      # Исходники с хоста — ради tsx watch. node_modules закрываем анонимным
+      # томом, иначе монтирование затрёт то, что собрано под Linux.
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
